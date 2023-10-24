@@ -1,0 +1,91 @@
+def REPO_URL
+def cluster_name
+def bitbucket_branch
+def map = [
+        pre_environment  : 'PRE',
+        stg_environment: 'STG',
+        test_environment  : 'TEST'
+]
+
+node {
+    map.each { entry ->
+        stage("preparatoin"){
+            script {
+                    
+                    switch (entry.key ) {
+                        case 'test_environment':
+                            bitbucket_branch = "*/development"
+                            REPO_URL = "tstartifactoryURL"
+							env= "dev"
+                            break
+                        case 'stg_environment':
+                            bitbucket_branch = "*/stg"
+                            REPO_URL = "stgartifactoryURL"
+							env= "stg"
+                            break
+                        case 'pre_environment':
+                            bitbucket_branch = "*/pre_prod"
+                            REPO_URL = "artifactoryURL"
+							env= "pre"
+                            break
+                        default:
+                            error("Invalid Artifactory environment choice")
+                    }
+		
+		    script {
+                   cluster_name= "${env}-microservices"
+			       namespace="web-app-test"
+			       deployment_name= "web-app-test"
+			       image_name = "${REPO_URL}/einvoicing/web-app-test"
+                   SONARQUBE_SERVER = 'http://eiv-pre-sonarqube.zatca.gov.sa'
+                //    withCredentials([usernamePassword(credentialsId: "my-secret-token", 
+                //         usernameVariable: 'USERNAME', 
+                //         passwordVariable: 'PASSWORD')]) {
+                //        SONARQUBE_TOKEN = "$PASSWORD" // Create a secret text credential in Jenkins with your SonarQube token
+                    }
+
+			       //build_number
+                    
+                    echo "bitbucket_branch : ${bitbucket_branch}"
+                    echo "REPO_URL : ${REPO_URL}"
+                    echo "cluster_name : ${cluster_name}"
+                    echo "namespace : ${namespace}"
+                    echo "deployment_name : ${deployment_name}"
+                    echo "image_name : ${image_name}"
+                    echo "SONARQUBE_SERVER : ${SONARQUBE_SERVER}"
+                    //echo "SONARQUBE_TOKEN : ${SONARQUBE_TOKEN}"
+                   }
+        }
+		
+        stage (entry.key) {
+            timestamps{
+                echo "$entry.value"
+            }
+        }
+
+
+
+
+        stage (entry.key) {
+            timestamps{
+                echo "$entry.value"
+            }
+        }
+
+
+
+
+        stage (entry.key) {
+            timestamps{
+                echo "$entry.value"
+            }
+        }
+
+
+
+
+        stage ("askforperm") {
+            
+                
+                input 'Are you sure?' 
+        }}}
